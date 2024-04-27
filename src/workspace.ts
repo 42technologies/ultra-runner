@@ -121,7 +121,8 @@ export class Workspace {
     let ret = [...this.packages.values()]
 
     if (filter) {
-      const withDeps = filter.startsWith("+")
+      const withSelf = !filter.startsWith("-")
+      const withDeps = filter.startsWith("+") || !withSelf
       let useCwd = false
       if (withDeps) {
         if (filter === "+" || filter === "+.") {
@@ -146,7 +147,7 @@ export class Workspace {
           regex.test(p.name || "") ||
           regex.test(path.relative(this.root, p.root).replace(/\\/gu, "/"))
         ) {
-          names.add(p.name)
+          if (withSelf) names.add(p.name)
           if (withDeps) this.getDepTree(p.name).forEach((dep) => names.add(dep))
         }
       })
